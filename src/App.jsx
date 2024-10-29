@@ -18,7 +18,7 @@ const Counter = () => {
         if (balls > 0) {
             setBalls(prevBalls => prevBalls - 1);
         }
-        if (balls===6){
+        if (balls+6){
             alert("over Completed")
         }
     };
