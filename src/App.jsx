@@ -10,10 +10,12 @@ const Counter = () => {
     const [balls, setBalls] = useState(6);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState("");
+    const [oversLeft, setOversLeft] = useState(1)
 
     const handleSelectChange = (value) => {
         setOver(value);
         setBalls(value * 6);
+        setOversLeft(value)
     };
     const handleWideChange = (value) => {
         setCount(prevCount => prevCount + parseInt(value));
@@ -68,7 +70,7 @@ const Counter = () => {
     }
 
     return (
-        <div className='flex items-center gap-4 flex-col mt-10 p-8 border rounded-lg shadow-lg max-w-md mx-auto bg-gray-800 text-white'>
+        <div className='flex items-center gap-4 flex-col mt-10 p-8 border rounded-lg shadow-lg max-w-md mx-auto bg-transparent text-white glass'>
             <h1 className='text-2xl font-semibold mb-4'>Cricket Score Counter</h1>
             <span className='bg-gray-700 text-white text-lg px-4 py-2 rounded-md'>{count}/{out}</span>
             <div className='flex items-center gap-3 flex-wrap justify-center'>
@@ -124,6 +126,7 @@ const Counter = () => {
                         ))}
                     </Select>
                 </label>
+                <p className='w-full text-center bg-gray-700 py-2 rounded-md' onChange={handleSelectChange}>Overs Left: {oversLeft}</p>
                 <p className='w-full text-center bg-gray-700 py-2 rounded-md'>Balls Left: {balls}</p>
             </div>
 

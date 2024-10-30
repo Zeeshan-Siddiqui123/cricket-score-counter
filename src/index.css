@@ -2,8 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    width: 100%;
+    height: 100%;
+    background-image: url(https://t3.ftcdn.net/jpg/06/59/60/16/360_F_659601641_dms0A1wuIBjQwsGFZpiLpzBQRpyG59nY.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+.glass {
+    background: rgba(80, 79, 79, 0.116);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
 @media screen and (max-width: 490px) {
-    .width{
+    .width {
         width: 320px !important;
     }
+
 }
