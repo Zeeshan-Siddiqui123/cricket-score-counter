@@ -6,17 +6,28 @@ const { Option } = Select;
 const Counter = () => {
     const [count, setCount] = useState(0);
     const [out, setOut] = useState(0);
-    const [over, setOver] = useState(1);
-    const [balls, setBalls] = useState(6);
+    const [over, setOver] = useState(0); 
+    const [ballsLeft, setBallsLeft] = useState(6); 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState("");
-    const [oversLeft, setOversLeft] = useState(1)
+    const [oversLeft, setOversLeft] = useState(1);
+    const [ballsBowled, setBallsBowled] = useState(0); 
 
+    const resetGame = () => {
+        setCount(count*0)
+        setOut(out*0)
+        setOver(over*0)
+        setBallsLeft(6)
+        setOversLeft(oversLeft/oversLeft)
+    }
     const handleSelectChange = (value) => {
-        setOver(value);
-        setBalls(value * 6);
-        setOversLeft(value)
+        setOversLeft(value);
+        setBallsLeft(value * 6);
+        setOver(0); 
+        setBallsBowled(0); 
+        // resetGame()
     };
+
     const handleWideChange = (value) => {
         setCount(prevCount => prevCount + parseInt(value));
     };
@@ -24,6 +35,7 @@ const Counter = () => {
     const handleNoBallChange = (value) => {
         setCount(prevCount => prevCount + parseInt(value));
     };
+
     const showModal = (message) => {
         setModalContent(message);
         setIsModalVisible(true);
@@ -35,42 +47,58 @@ const Counter = () => {
     };
 
     const updateCountAndBalls = (runs) => {
-        if (balls > 0) {
+        if (ballsLeft > 0) {
             setCount(prevCount => prevCount + runs);
-            setBalls(prevBalls => {
-                const newBalls = prevBalls - 1;
-                if (newBalls === 0) {
-                    showModal(`Overs completed! Your score is ${count}`);
-                    setOver(over / over)
-                    setCount(count * 0)
-                    setOut(out * 0)
-                    setBalls(balls + 5)
+            setBallsLeft(prevBallsLeft => prevBallsLeft - 1);
+            setBallsBowled(prevBallsBowled => {
+                const newBallsBowled = prevBallsBowled + 1;
+                if (newBallsBowled % 6 === 0) {
+                    setOver(prevOver => prevOver + 1); // Increment over count every 6 balls
                 }
-                return newBalls;
+                // resetGame()
+                return newBallsBowled;
             });
+
+            if (ballsLeft === 1) {
+                showModal(`Overs completed! Your score is ${count}`);
+            }
         }
     };
 
     const handleOut = () => {
-        if (out < 10) {
+        if (out < 10 && ballsLeft > 0) {
             setOut(prevOut => {
                 const newOut = prevOut + 1;
                 if (newOut === 10) {
                     showModal(`Team All Out! Your Score is ${count}`);
                 }
+                // resetGame()
                 return newOut;
+            });
+            setBallsLeft(prevBallsLeft => prevBallsLeft - 1);
+            setBallsBowled(prevBallsBowled => {
+                const newBallsBowled = prevBallsBowled + 1;
+                if (newBallsBowled % 6 === 0) {
+                    setOver(prevOver => prevOver + 1); 
+                }
+                return newBallsBowled;
             });
         }
     };
-    if (out === 10) {
-        setOver(over / over)
-        setCount(count * 0)
-        setOut(out * 0)
-        setBalls(6)
-    }
-
     return (
-        <div className='flex items-center gap-4 flex-col mt-10 p-8 border rounded-lg shadow-lg max-w-md mx-auto bg-transparent text-white glass'>
+        <div className='body'>
+            <div className="flex flex-col justify-center items-start ml-10 gap-2">
+            <h2 className='text-red-600 text-xl'>Note:</h2>
+            {/* <p className='text-white'> */}
+                <ul>
+                    <li className='text-white'>1. If your selection of over is wrong by mistake then you refresh and select over again.</li>
+                    <li className='text-white'>2. When your selection of over is confirmed then you will start scoring and don't refresh again and not select over again until your overs will completed.</li>
+                    <li className='text-white'>3. Remember that the game should not be refreshed between scoring If you refresh in between the scoring your score count is zero and the game will start again.</li>
+                    <li className='text-white'>4. 'Wd' and 'Nb' stands for 1 run of wide ball and No ball respectively 'Wd1 & Nb1' stands for wide & No ball + 1.</li>
+                </ul>
+            {/* </p> */}
+            </div>
+            <div className='flex items-center gap-4 flex-col mt-10 p-8 border rounded-lg shadow-lg max-w-md mx-auto bg-transparent text-white glass'>
             <h1 className='text-2xl font-semibold mb-4'>Cricket Score Counter</h1>
             <span className='bg-gray-700 text-white text-lg px-4 py-2 rounded-md'>{count}/{out}</span>
             <div className='flex items-center gap-3 flex-wrap justify-center'>
@@ -83,7 +111,7 @@ const Counter = () => {
                         {runs}
                     </button>
                 ))}
-             <div className='w-24 p-2 rounded-md bg-green-500 hover:bg-green-700 transition flex gap-2 justify-between items-center'>
+                <div className='w-24 p-2 rounded-md bg-green-500 hover:bg-green-700 transition flex gap-2 justify-between items-center'>
                     <span>Wide Ball</span>
                     <Select
                         value={'Wd'}
@@ -117,7 +145,7 @@ const Counter = () => {
                 <label className='w-24 p-2 rounded-md bg-gray-600 flex gap-2 justify-between items-center'>
                     <span>Overs:</span>
                     <Select
-                        value={over}
+                        value={oversLeft}
                         onChange={handleSelectChange}
                         className='w-16'
                     >
@@ -126,15 +154,15 @@ const Counter = () => {
                         ))}
                     </Select>
                 </label>
-                <p className='w-full text-center bg-gray-700 py-2 rounded-md' onChange={handleSelectChange}>Overs Left: {oversLeft}</p>
-                <p className='w-full text-center bg-gray-700 py-2 rounded-md'>Balls Left: {balls}</p>
+                <p className='w-full text-center bg-gray-700 py-2 rounded-md'>Overs Count: {over}</p>
+                <p className='w-full text-center bg-gray-700 py-2 rounded-md'>Balls Left: {ballsLeft}</p>
             </div>
 
             <Modal
                 title="Game Update"
                 visible={isModalVisible}
                 onOk={handleOk}
-                onCancel={() => setIsModalVisible(false)}
+                onCancel={handleOk}
                 footer={[
                     <Button key="ok" type="primary" onClick={handleOk}>
                         OK
@@ -143,6 +171,7 @@ const Counter = () => {
             >
                 <p>{modalContent}</p>
             </Modal>
+        </div>
         </div>
     );
 };
